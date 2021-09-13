@@ -83,22 +83,22 @@ class WXInlinePlayer extends EventEmitter {
     customLoader = null
   }) {
     super();
-    this.url = url;
-    this.$container = $container;
-    this.width = $container.width;
-    this.height = $container.height;
-    this.vol = volume;
-    this.muted = muted;
-    this.duration = 0;
-    this.autoplay = autoplay;
-    this.loop = loop;
-    this.isLive = isLive;
-    this.chunkSize = chunkSize;
-    this.preloadTime = preloadTime;
-    this.bufferingTime = bufferingTime;
-    this.cacheSegmentCount = cacheSegmentCount;
+      this.url = url; // http://192.168.1.5:8086/live/livestream.flv
+    this.$container = $container;       // canvas对象
+    this.width = $container.width;      // 1920
+    this.height = $container.height;    // 1080
+    this.vol = volume;      // 1
+    this.muted = muted;     // false
+    this.duration = 0;      // 0
+    this.autoplay = autoplay;   // true
+    this.loop = loop;           // true
+    this.isLive = isLive;       // true
+    this.chunkSize = chunkSize; // 131072
+    this.preloadTime = preloadTime; // 500
+    this.bufferingTime = bufferingTime; // 500
+    this.cacheSegmentCount = cacheSegmentCount; // 64
     /*this.cacheInMemory = cacheInMemory;*/
-    this.customLoader = customLoader;
+    this.customLoader = customLoader;       // null
     this.timeUpdateTimer = null;
     this.isInitlize = false;
     this.isEnd = false;
@@ -149,7 +149,7 @@ class WXInlinePlayer extends EventEmitter {
         resolve();
       };
       script.onerror = e => reject(e);
-      script.src = `${url}`;
+      script.src = `${url}`;            // http://192.168.1.5:9080/prod.all.wasm.combine.js"
       script.type = 'text/javascript';
       head.appendChild(script);
     });
@@ -175,7 +175,7 @@ class WXInlinePlayer extends EventEmitter {
       this._initlize();
       this.processor.unblock(0);
     }
-    this.emit('play');
+    this.emit('play');  // index.html  player.on("play",
   }
 
   stop() {
@@ -303,12 +303,13 @@ class WXInlinePlayer extends EventEmitter {
     this.loader = new (this.customLoader ? this.customLoader : Loader)({
       type: this.isLive ? 'stream' : 'chunk',
       opt: {
-        url: this.url,
+          url: this.url,
         chunkSize: this.chunkSize
         /*cacheInMemory: this.cacheInMemory*/
       }
     });
 
+    // loader.url = "blob:http://192.168.1.5:9080/b95a9c2b-ee31-4014-aa9d-bf990da6a398"
     this.loader.on('loadError', error => this.emit('loadError', error));
     this.loader.on('loadSuccess', () => this.emit('loadSuccess'));
 

@@ -48,10 +48,12 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 *********************************************************/
 
 #include "decoder.h"
+#include "body.h"
 
 void Decoder::decode(shared_ptr<Buffer> &buffer) {
   _buffer = make_shared<Buffer>(*_buffer + *buffer);
   for (;;) {
+#if FLV_DEFAULT_FILE_STREAM
     switch (_state) {
       case Header::STATE: {
         if (_buffer->get_length() < Header::MIN_LENGTH) {
@@ -88,5 +90,23 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
       default:
         return;
     }
+#else
+	  // nvrÂ¼ÏñÎÄ¼þ½âÎö
+	  if (_buffer->get_length() < 16) {
+		  return;
+	  }
+
+	  shared_ptr<BodyValue> value = _body->decode(_buffer);
+	  if (value->unvalidate) {
+		  return;
+	  }
+
+	  if (_factor != nullptr) {
+		  _factor->recvBodyValue(value);
+	  }
+	  _buffer = value->buffer;
+#endif
+
+
   }
 }

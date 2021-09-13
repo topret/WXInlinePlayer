@@ -55,7 +55,7 @@ export default function() {
   } catch (e) {
     // nothing to do...
   }
-
+  // 合并数组i,j后返回新的数组
   function concat(i, j) {
     const buffer = new Uint8Array(i.length + j.length);
     buffer.set(new Uint8Array(i), 0);
@@ -74,12 +74,12 @@ export default function() {
       result.set(buffer.subarray(startIndex, endIndex));
       return result;
     }else{
-      return buffer.subarray(startIndex, endIndex);
+        return buffer.subarray(startIndex, endIndex); // 应该是 深拷贝 buffer.slice?
     }
   }
 
   function StreamLoader({ url, chunkSize = 256 * 1024 }) {
-    this.url = url;
+    this.url = url;         // http://192.168.1.5:8086/live/livestream.flv
     this.done = false;
     this.reader = null;
     this.chunkSize = chunkSize;

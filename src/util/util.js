@@ -54,15 +54,15 @@ export default {
   isWeChat() {
     return /MicroMessenger/i.test(window.navigator.userAgent);
   },
-  workerify(func, methods = []) {
-    const funcStr = this.getFuncBody(func.toString());
+  workerify(func, methods = []) {   // call from loader.js  , methods= ['read', 'cancel', 'hasData']
+    const funcStr = this.getFuncBody(func.toString());  // funcStr = stream.js的文件内容
     function __Worker__(data) {
       EventEmitter.call(this);
       this.id = 0;
       this.resolves = [];
 
       const blob = new Blob([funcStr], { type: 'text/javascript' });
-      this.url = URL.createObjectURL(blob);
+      this.url = URL.createObjectURL(blob); // funcStr 当做一个文件的url: "blob:http://192.168.1.5:9080/738cc000-1688-4923-aaa1-625c30298114"
       this.worker = new Worker(this.url);
       this.worker.onmessage = message => {
         const { id, data, destroy, type } = message.data;
@@ -84,7 +84,7 @@ export default {
         }
       };
 
-      this.worker.postMessage({ type: 'constructor', id: this.id++, data });
+      this.worker.postMessage({ type: 'constructor', id: this.id++, data }); // data.url=http://192.168.1.5:8086/live/livestream.flv  -->stream.js
     }
 
     inherits(__Worker__, EventEmitter);

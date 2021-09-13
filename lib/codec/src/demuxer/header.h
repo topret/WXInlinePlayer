@@ -58,12 +58,13 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 
 using namespace std;
 
+// flv ÎÄ¼þÍ·
 struct HeaderValue {
     explicit HeaderValue(bool e = false) : empty(e) {};
 
     bool empty;
-    Buffer signature;
-    uint32_t version;
+    Buffer signature;		// FLV
+    uint32_t version;		// 1
     bool hasAudio;
     bool hasVideo;
     uint32_t offset;

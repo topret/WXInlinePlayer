@@ -57,6 +57,10 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 #include "stream/buffer.h"
 #include "tag.h"
 
+// 1: 默认的flv视频
+// 0: nvr文件
+#define FLV_DEFAULT_FILE_STREAM 1
+
 using namespace std;
 
 struct BodyValue {

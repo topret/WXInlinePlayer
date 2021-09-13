@@ -60,8 +60,8 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 struct TagValue {
     explicit TagValue(bool e = false) : unvalidate(e) {};
     bool unvalidate;
-    uint32_t type;
-    uint32_t timestamp;
+    uint32_t type;		// 8, 9, 12  音频, 视频, 脚本数据
+    uint32_t timestamp;		// 毫秒时间,
     AudioTagValue audioTag;
     VideoTagValue videoTag;
     DataTagValue dataTag;

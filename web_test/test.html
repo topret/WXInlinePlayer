@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>websocket测试</title>
+</head>
+<body>
+
+<input type="text" id="DataIP" size="100" value="127.0.0.1:8084">
+<input type="button" value="修改webserver" onclick="ChangeServerIP()"/>
+
+<h3>WebSocket测试，客户端接收到的消息如下：</h3>
+
+<textarea id="messageId" readonly="readonly" cols="150" rows="30">
+
+</textarea>
+
+
+<script type="text/javascript">
+	// TypedArray slice()  深拷贝,  subarray 浅拷贝
+	// 测试异步等待
+	function sleep(ms) {
+		return new Promise(function(resolve, reject) {
+			setTimeout(resolve, ms);
+		})
+	}
+	console.log("AAA")
+	sleep(500).then( ()=> console.log("finished"));
+	async function handle(){
+		console.log("DDD")
+		await sleep(500)
+		console.log("EEE")
+	}
+
+	console.log("BBB")
+	handle();
+	console.log("CCC")
+
+	function TestStruct2() {
+		// 结构体(小端存储): FlagChar4 = 'VSK1'; totalLen4B; msgID(Cmd)2B, clientID2B, Data(totalLen-12)
+		var strMsg = "hello"
+		let nTotalLen = 12+strMsg.length
+		console.log(strMsg + " len:" + String(nTotalLen));
+		let pBuf = new ArrayBuffer(nTotalLen)
+		let pFlag = new Uint8Array(pBuf, 0, 4)
+		pFlag[0] = 'V'.charCodeAt(0);pFlag[1] = 'S'.charCodeAt(0);pFlag[2] = 'K'.charCodeAt(0);pFlag[3] = '1'.charCodeAt(0);
+		console.log(String.fromCharCode(pFlag[0],pFlag[1],pFlag[2],pFlag[3]));
+		
+		let pTotalLen = new Uint32Array(pBuf, 4, 1)	// index, len
+		pTotalLen[0] = nTotalLen	
+		console.log(pTotalLen[0]);
+		console.log("pTotalLen length:" + String(pTotalLen.length));
+		console.log("pTotalLen byteLength:" + String(pTotalLen.byteLength));
+		console.log("pTotalLen byteOffset:" + String(pTotalLen.byteOffset));
+		
+		let pMsgID = new Uint16Array(pBuf, 8, 1)
+		pMsgID[0] = 1
+		let pClientID = new Uint16Array(pBuf, 10, 1)
+		pClientID[0] = 110
+		
+		// 不能内存拷贝? 只能一个一个的拷贝?
+		let pData = new Uint8Array(pBuf, 12, strMsg.length)
+		for(var i=0;i<strMsg.length; i++) {		
+			pData[i] = strMsg.charCodeAt(i)
+		}
+		
+		console.log("TestStruct2");	
+		console.log(pBuf);		
+	}
+	function TestStruct1() {
+		// 结构体(小端存储): FlagChar4 = 'VSK1'; totalLen4B; msgID(Cmd)2B, clientID2B, Data(totalLen-12)
+		var strMsg = "hello"
+		let nTotalLen = 12+strMsg.length
+		console.log(strMsg + " len:" + String(nTotalLen));
+		let pBuf = new ArrayBuffer(nTotalLen)
+		let pDV = new DataView(pBuf);			// 参数只能是: ArrayBuffer
+		pDV.setUint8(0, 'V'.charCodeAt(0))
+		pDV.setUint8(1, 'S'.charCodeAt(0))
+		pDV.setUint8(2, 'K'.charCodeAt(0))
+		pDV.setUint8(3, '1'.charCodeAt(0))	
+			
+		pDV.setUint32(4, nTotalLen, true)	 	// 小端存储
+		pDV.setUint16(8, 1, true) 				// 小端存储
+		pDV.setUint16(10, 110, true) 			// 小端存储		
+		
+		// 不能内存拷贝? 只能一个一个的拷贝?
+		let pData = new Uint8Array(pBuf, 12, strMsg.length)
+		for(var i=0;i<strMsg.length; i++) {		
+			pDV.setUint8(i+12, strMsg.charCodeAt(i))
+		}
+		console.log("TestStruct1");	
+		console.log(pBuf);		
+	}
+	
+	function TestStruct3() {
+		// 结构体(小端存储): FlagChar4 = 'VSK1'; totalLen4B; msgID(Cmd)2B, clientID2B, Data(totalLen-12)
+		var strMsg = "hello"
+		let nTotalLen = 12+strMsg.length
+		console.log(strMsg + " len:" + String(nTotalLen));
+		let pBuf = new Uint8Array(nTotalLen)
+		let pDV = new DataView(pBuf.buffer);			// 参数只能是: ArrayBuffer
+		pDV.setUint8(0, 'V'.charCodeAt(0))
+		pDV.setUint8(1, 'S'.charCodeAt(0))
+		pDV.setUint8(2, 'K'.charCodeAt(0))
+		pDV.setUint8(3, '1'.charCodeAt(0))	
+			
+		pDV.setUint32(4, nTotalLen, true)	 	// 小端存储
+		pDV.setUint16(8, 1, true) 				// 小端存储
+		pDV.setUint16(10, 110, true) 			// 小端存储		
+		
+		// 不能内存拷贝? 只能一个一个的拷贝?
+		let pData = new Uint8Array(pBuf, 12, strMsg.length)
+		for(var i=0;i<strMsg.length; i++) {		
+			pDV.setUint8(i+12, strMsg.charCodeAt(i))
+		}
+		console.log("TestStruct3");	
+		console.log(pBuf);			
+		console.log(pBuf.join(''));	
+		
+		uint8 = new Uint8Array([10, 20, 30, 40, 50]);		
+		const array1 = uint8.slice(1, 3);
+		array1[0] = 77; array1[1] = 88;	
+		console.log(uint8.toString());		// 10,20,30,40,50 内容不变
+		
+		s1 = uint8.subarray(1, 3)
+		s1[0] = 2; s1[1] = 3;
+		console.log(uint8.toString());		// 10,2,3,40,50 改变
+		
+		console.log(s1.toString());
+		console.log(array1.toString());	// slice()  深拷贝,  subarray 浅拷贝
+		
+		new1 = uint8.subarray(0)		
+		uint8 = uint8.subarray(2);			// 浅拷贝, 再赋值!
+		console.log(uint8.toString());		// 3,40,50
+		
+		console.log(new1.toString());		// 10,2,3,40,50 改变
+		uint8[0] = 200
+		console.log(new1.toString());		// 10,2,200,40,50 改变
+	}
+	// ArrayBuffer 需要配合数据视图使用
+	function TestArrayBuffer()  {
+		console.log("start TestArrayBuffer");
+		let pBuf = new ArrayBuffer(256)
+		console.log("ArrayBuffer len: " + String(pBuf.byteLength));
+		let pInt8Array = new Int8Array(pBuf);
+		for(var i=0; i<pBuf.byteLength; i++) {
+			pInt8Array[i] = i;
+		}
+		console.log(pInt8Array[0]);
+		console.log("int8Array length:" + String(pInt8Array.length));
+		console.log("int8Array byteLength:" + String(pInt8Array.byteLength));
+		console.log("int8Array byteOffset:" + String(pInt8Array.byteOffset));
+		console.log(pInt8Array.buffer);	// == pBuf
+		
+		let int16Array = new Int16Array(pBuf);
+		console.log(int16Array[0])	// 256 = 00 01 小端存储时为 0x0100 = 256
+		console.log("int16Array length:" + String(int16Array.length));
+		console.log("int16Array byteLength:" + String(int16Array.byteLength));
+		console.log("int16Array byteOffset:" + String(int16Array.byteOffset));
+		console.log(int16Array.buffer);	// == pBuf
+		
+		// 数组复制  耗时操作!
+		let a1 = new Uint8Array(12)
+		let a2 = new Uint8Array(13)
+		a1[0] =1; a1[1]=2;a1[2]=3;
+		a2.set(a1,1)	// a1复制到a2指定位置的地方
+		console.log("数组复制a2[0]:" + String(a2[0]));
+		console.log("数组复制a2[1]:" + String(a2[1]));
+		console.log("数组复制a2[2]:" + String(a2[2]));
+		console.log("数组复制a2[3]:" + String(a2[3]));
+		
+		let a3 = a1.subarray(2,3)	// [2,3) 长度为 1
+		console.log(a3[0]);
+		console.log("a3 length:" + String(a3.length));	// 1
+		console.log("a3 byteLength:" + String(a3.byteLength));
+		console.log("a3 byteOffset:" + String(a3.byteOffset));
+		console.log(a3.buffer);	// == pBuf
+		
+		TestStruct1();
+		TestStruct2();
+		TestStruct3();
+	}
+		
+	function Sleep (time) {
+	  var start = new Date().getTime();
+		do{
+		  var end = new Date().getTime();
+		}while(end-start<=time);
+	}
+
+    //byte数组转字符串
+    function byteToString(arr) {
+        if(typeof arr === 'string') {
+            return arr;
+        }
+        var str = '',
+            _arr = arr;
+        for(var i = 0; i < _arr.length; i++) {
+            var one = _arr[i].toString(2),
+                v = one.match(/^1+?(?=0)/);
+            if(v && one.length == 8) {
+                var bytesLength = v[0].length;
+                var store = _arr[i].toString(2).slice(7 - bytesLength);
+                for(var st = 1; st < bytesLength; st++) {
+                    store += _arr[st + i].toString(2).slice(2);
+                }
+                str += String.fromCharCode(parseInt(store, 2));
+                i += bytesLength - 1;
+            } else {
+                str += String.fromCharCode(_arr[i]);
+            }
+        }
+        return str;
+    };
+
+	//将字符串转为 Array byte数组
+    function stringToByte(str) {
+        var bytes = new Array();
+        var len, c;
+        len = str.length;
+        for(var i = 0; i < len; i++) {
+            c = str.charCodeAt(i);
+            if(c >= 0x010000 && c <= 0x10FFFF) {
+                bytes.push(((c >> 18) & 0x07) | 0xF0);
+                bytes.push(((c >> 12) & 0x3F) | 0x80);
+                bytes.push(((c >> 6) & 0x3F) | 0x80);
+                bytes.push((c & 0x3F) | 0x80);
+            } else if(c >= 0x000800 && c <= 0x00FFFF) {
+                bytes.push(((c >> 12) & 0x0F) | 0xE0);
+                bytes.push(((c >> 6) & 0x3F) | 0x80);
+                bytes.push((c & 0x3F) | 0x80);
+            } else if(c >= 0x000080 && c <= 0x0007FF) {
+                bytes.push(((c >> 6) & 0x1F) | 0xC0);
+                bytes.push((c & 0x3F) | 0x80);
+            } else {
+                bytes.push(c & 0xFF);
+            }
+        }
+        return bytes;
+    };
+	
+    var socket = null;	
+	strUrl = "127.0.0.1:8084"
+	//strUrl = "192.168.1.249:8081"
+	strPublicKey = ""
+		
+	function ChangeServerIP() {
+		var strIP=document.getElementById("DataIP").value;
+		document.getElementById("messageId").append("ChangeServerIP :" +  strIP + "\n");
+		if (socket != null) {
+			socket.close();
+			socket = null;
+		}
+		var strIPCtl=document.getElementById("DataIP");
+		strUrl = "ws://" + strIPCtl.value +"/ws/client";
+		InitWebsocket();
+	}
+	
+	function InitWebsocket() {
+		socket = new WebSocket(strUrl);
+		//连接打开事件
+		socket.onopen = function () {
+			console.log("Socket 已打开");
+			socket.send("{\"mscmd\":\"LOGIN\",\"msid\":111, \"msbody\":{\"name\":\"admin\", \"password\":\"admin\"}}");
+			//socket.send("{\"mscmd\":\"LOGIN\",\"msid\":111, \"msbody\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b20iOnsiSUQiOiIxIn0sImV4cCI6MTU4OTAxMzk2M30.2T0g_oO3ihCiAU_30Lrla64m2rIyFdXCwpLN8Il2AME\"}}");
+			//将字符串转换为byte数组
+			var bytesArr= stringToByte("二进制消息发送测试(From Client)");
+			var bytes =new Uint8Array(bytesArr.length) ;
+			for (var i = 0; i < bytes.length; i++) {
+				bytes[i]=bytesArr[i];
+			}
+			console.log(bytes);
+			socket.send(bytes);
+
+			var bytes_ping =new Uint8Array(1) ;
+			bytes_ping[0] = 0x9;
+			socket.send(bytes_ping);
+		};
+		//收到消息事件
+		socket.onmessage = function (msg) {
+			document.getElementById("messageId").append(Date.now().toString() + " " + msg.data + "\n");
+			console.log(Date.now().toString() + msg.data);
+			var xJson = JSON.parse(msg.data)	
+			if  (xJson.mscmd == "ACKLOGIN")
+			{
+				//socket.send("{\"mscmd\":\"test_get_h264_data\",\"msid\":800, \"msbody\":{}}");
+				socket.send("{\"mscmd\":\"Ukey_GetUkeyList\",\"msid\":900, \"msbody\":{}}");
+				socket.send("{\"mscmd\":\"Ukey_ConnectUkey\",\"msid\":901, \"msbody\":{\"device_path\":\"G:\"}}");
+			}
+		};
+	
+		//连接关闭事件
+		socket.onclose = function () {
+			console.log("Socket已关闭");
+		};
+		//发生了错误事件
+		socket.onerror = function () {
+			alert("Socket发生了错误");
+		}
+		//窗口关闭时，关闭连接
+		window.unload = function () {
+			socket.close();
+		};		
+	};	
+			
+	if (typeof (WebSocket) == "undefined") {
+		console.log("遗憾：您的浏览器不支持WebSocket");
+	} else {
+		// main 入口:
+		TestArrayBuffer()
+        console.log("恭喜：您的浏览器支持WebSocket");
+		var strIPCtl=document.getElementById("DataIP");
+		strIPCtl.value = strUrl;
+		strUrl = "ws://" + strUrl +"/ws/client";	
+	
+		//InitWebsocket();
+    };
+/* https://zhuanlan.zhihu.com/p/338850208
+关键数据类型
+JavaScript 与二进制相关的类主要有：
+
+ArrayBuffer，可以理解为无类型的内存分配器，特点是：
+	可以分配一块固定大小的内存
+	只提供一个 byteLength 这个属性获取内存长度，没有别的访问方法
+	可以通过 DataView 访问，亦可转成 Uint8Array 等来进行访问
+DataView，操作 ArrayBuffer 的工具类，提供数值的序列化（写入）与反序列化（读取）操作
+	只能接受 ArrayBuffer 作为缓冲区
+	写入与读取操作均需要提供在缓冲区内的 pos
+	提供 8、16、32bit 有符号及无符号整数的写入与读取操作
+	16、32bit 整数默认使用大端字节序，要使用小端需要传入 true 参数
+	没有提供 64bit 整数支持，因为 js 本身就没有 64bit 整数？
+	也支持浮点数，不担心二进制兼容性可以使用
+	TypedArray，一堆数值数组的总称：
+	实际可以使用的类有 Uint8Array，Int32Array 等
+	可简单理解为直接对 ArrayBuffer 进行整数操作的数组
+TypedArray 似乎使用本地字节序？指定字节序请使用 DataView
+	可从 ArrayBuffer 创建 TypedArray
+	多个 TypedArray 可以操作同一个 ArrayBuffer
+	可以直接创建指定元素个数的 TypedArray
+	一旦创建，长度无法修改
+	通过 TypedArray.buffer 获取底层 ArrayBuffer
+	可通过下标访问元素，通过 TypedArray.length 获取元素个数
+	TypedArray.slice() 可以深拷贝一个新的缓冲区
+Blob，不懂这玩意
+	转成 ArrayBuffer 还挺麻烦，有人知道简单的办法吗
+	与外部输入关系比较大
+	
+	var enc = new TextEncoder(); 仅能支持 UTF-8！
+	var b = enc.encode('直接'); // Uint8Array(6) [ 231, 155, 180, 230, 142, 165 ]
+	var dec = new TextDecoder();
+	dec.decoder(b); // "直接"
+*/
+</script>
+</body>
+</html>

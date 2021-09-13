@@ -48,11 +48,41 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 *********************************************************/
 
 #include "body.h"
+#include <stdio.h>
+
+//  x86 nvr 帧头格式
+typedef struct _DataHeard
+{
+	unsigned int headSig; //帧开始标记
+	unsigned short codect;//编码类型	PAYLOAD_TYPE_E
+	unsigned short framet;//帧类型  h264:H264E_NALU_TYPE_E, h265:H265_NALU_TYPE
+	unsigned short gapms;	//帧间距 默认 40
+	unsigned short framerate;//平均帧率 默认25
+	unsigned int framelen; //帧长度 不包括 格式封装的结束符的长度
+}DataHeard;
+struct KeyFrameparam
+{
+	unsigned int vwidth;//视频宽 
+	unsigned int vheight;//视频高
+	uint64_t     timestamp;//时间戳 utc 时间，关键帧才有
+};
+typedef enum
+{
+	H264E_NALU_PSLICE = 1, /*PSLICE types*/
+	H264E_NALU_ISLICE = 5, /*ISLICE types*/
+	H264E_NALU_SEI = 6, /*SEI types*/
+	H264E_NALU_SPS = 7, /*SPS types*/
+	H264E_NALU_PPS = 8, /*PPS types*/
+	H264E_NALU_BUTT = 9,
+	H264E_NALU_UNKNOW = 0x00
+} H264E_NALU_TYPE_E;
+
 
 shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   Tag tag;
   shared_ptr<BodyValue> value = make_shared<BodyValue>();
 
+#if FLV_DEFAULT_FILE_STREAM
   for (;;) {
     if (buffer->get_length() < Body::MIN_LENGTH) {
       break;
@@ -73,6 +103,47 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
     retValue.buffer = make_shared<Buffer>();
     value->tags->push_back(retValue);
   }
+#else
+  // nvr录像文件解析
+  //unsigned int nSig = buffer->read_uint32_le(0);
+  DataHeard* pHead = (DataHeard *)(buffer->get_buf_ptr());
+  if (pHead->headSig != 0xFE010000)
+  {
+	  printf("read nvr header failed sig:0x%x\r\n", pHead->headSig);
+	  value->buffer = buffer->slice(1);	// 读取1B
+	  return value;
+  }
+
+  int nBaseHeadSize = sizeof(DataHeard);	// 16B
+  bool bKeyFrameSize = false;
+  int nHeaderSize = nBaseHeadSize;
+  if (pHead->codect == 26)	// PT_H264
+  {
+	  if (pHead->framet == H264E_NALU_ISLICE || pHead->framet == H264E_NALU_SPS)
+	  {
+		  nHeaderSize += 16;
+		  bKeyFrameSize = true;
+	  }
+  }
+  else
+  {
+	  // 认为是audio
+	  nHeaderSize += 5;
+  }
+
+  do 
+  {
+	  int nOneFrameLen = nHeaderSize + pHead->framelen + 4; // tail = 4
+	  if (buffer->get_length() < nOneFrameLen) {
+		  break;
+	  }
+
+	  //  read body
+	  int nReadLen = nHeaderSize - nBaseHeadSize + pHead->framelen + 4; // tail = 4
+
+  } while (0);
+
+#endif
 
   value->buffer = buffer;
   return value;

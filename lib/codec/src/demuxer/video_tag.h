@@ -77,9 +77,9 @@ public:
     VideoTagValue decode(const shared_ptr<Buffer> &buffer, uint32_t size);
 
 private:
-    uint32_t _frameType;
-    uint32_t _codecId;
-    uint32_t _AVCPacketType;
+    uint32_t _frameType;	//1 : ¹Ø¼üÖ¡, 2 inter frame, 3...
+    uint32_t _codecId;		// 7:h264
+    uint32_t _AVCPacketType;	// 0: seq header, 1: nalu, 2: end seq
     uint32_t _compositionTime;
 };
 

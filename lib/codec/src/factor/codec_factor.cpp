@@ -169,7 +169,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
   SBufferInfo sDstInfo = {0};
 #endif
 
-  if (tag.AVCPacketType == 0) {
+  if (tag.AVCPacketType == 0) {	// seq header
     shared_ptr<Buffer> unit = tag.data;
     uint8_t configurationVersion = unit->read_uint8(0);
     uint8_t AVCProfileIndication = unit->read_uint8(1);
@@ -202,7 +202,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 #else
     h264bsdDecode(_codec->storage, _codec->pps->get_buf_ptr(), _codec->pps->get_length(), &picPtr, &width, &height);
 #endif
-  } else if (tag.AVCPacketType == 1) {
+  } else if (tag.AVCPacketType == 1) {	// nalu
     uint32_t size = tag.data->get_length();
     shared_ptr<Buffer> unit = tag.data;
     shared_ptr<Buffer> nalus = make_shared<Buffer>();
@@ -301,7 +301,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
       }
 #endif
     }
-  } else if (tag.AVCPacketType == 2) {
+  } else if (tag.AVCPacketType == 2) {	// seq end
 #ifdef __EMSCRIPTEN__
     EM_ASM({
       var isWorker = typeof importScripts == "function";

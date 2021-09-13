@@ -113,10 +113,11 @@ class Processor extends EventEmitter {
       return 0;
     }
   }
-
+    // F  L   V 1 v&a     9B    0   脚本数据
+    // 70,76,86,1,5,0,0,0,9,0,0,0,0,18,0,1,67,0,0,0,0,0,0,0,2,0,10,111,110,77,101,116,97,68,97,116,97,3,0,5,119,105,100,116,104,0....
   process(buffer) {
     if (this.codec) {
-      this.codec.decode(buffer);
+      this.codec.decode(buffer);        // processFLV开始....
     }
   }
 
@@ -378,12 +379,12 @@ class Processor extends EventEmitter {
       }
       case 'video': {
         const {
-          timestamp,
-          width,
-          height,
-          stride0,
-          stride1,
-          buffer
+          timestamp,    // 52
+          width,        // 1920
+          height,       // 1080
+          stride0,      // 1920
+          stride1,      // 1080
+          buffer        // ArrayBuffer(3 110 400)
         } = msg.data;
         if (!this.baseTime) {
           this.baseTime = timestamp;
