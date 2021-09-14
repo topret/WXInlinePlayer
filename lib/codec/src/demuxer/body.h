@@ -59,7 +59,9 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 
 // 1: 默认的flv视频
 // 0: nvr文件
-#define FLV_DEFAULT_FILE_STREAM 1
+#define FLV_DEFAULT_FILE_STREAM 0
+
+#define NVR_FILE_HEADER_MIN_LEN 16
 
 using namespace std;
 

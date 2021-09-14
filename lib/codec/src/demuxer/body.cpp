@@ -76,7 +76,17 @@ typedef enum
 	H264E_NALU_BUTT = 9,
 	H264E_NALU_UNKNOW = 0x00
 } H264E_NALU_TYPE_E;
-
+typedef enum
+{
+	H265_NALU_PSLICE = 0,       /*PSLICE types*/
+	H265_NALU_PSLICE_MAX = 18,  /*PSLICE types*/
+	H265_NALU_ISLICE = 19,      /*ISLICE types*/
+	H265_NALU_ISLICE_MAX = 20,  /*ISLICE types*/
+	H265_NALU_VPS = 32, /*SPS types*/
+	H265_NALU_SPS = 33, /*SPS types*/
+	H265_NALU_PPS = 34, /*PPS types*/
+	H265_NALU_MAX
+} H265_NALU_TYPE;
 
 shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   Tag tag;
@@ -115,14 +125,24 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   }
 
   int nBaseHeadSize = sizeof(DataHeard);	// 16B
-  bool bKeyFrameSize = false;
+  bool bVideo = false;
+  bool bBigFrameSize = false;
   int nHeaderSize = nBaseHeadSize;
   if (pHead->codect == 26)	// PT_H264
   {
+	  bVideo = true;
 	  if (pHead->framet == H264E_NALU_ISLICE || pHead->framet == H264E_NALU_SPS)
 	  {
-		  nHeaderSize += 16;
-		  bKeyFrameSize = true;
+		  nHeaderSize += 16;	// sizeof KeyFrameparam
+		  bBigFrameSize = true;	
+	  }
+  } else if (pHead->codect == 35)	// h265
+  {
+	  bVideo = true;
+	  if (pHead->framet == H265_NALU_ISLICE || pHead->framet == H265_NALU_ISLICE_MAX || pHead->framet == H265_NALU_VPS || pHead->framet == H265_NALU_SPS)
+	  {
+		  nHeaderSize += 16;	// sizeof KeyFrameparam
+		  bBigFrameSize = true;
 	  }
   }
   else
@@ -138,8 +158,29 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
 		  break;
 	  }
 
-	  //  read body
-	  int nReadLen = nHeaderSize - nBaseHeadSize + pHead->framelen + 4; // tail = 4
+	  //  read frame
+	  if (!bVideo)
+	  {
+		  break; // 暂不处理音频
+	  }
+	 
+	  // 这里暂时只处理视频
+	  TagValue retValue;
+	  retValue.type = VideoTag::TYPE;	// 9
+
+	  static unsigned int nStartTimeMs = 0;
+	  retValue.videoTag.frameType = 1;		// 
+	  retValue.videoTag.codecId = 7;		// h264
+	  retValue.videoTag.AVCPacketType = 1;	// nalu
+	  retValue.videoTag.compositionTime = nStartTimeMs + pHead->gapms;
+	  retValue.videoTag.data = make_shared<Buffer>(buffer->slice(nHeaderSize, pHead->framelen));
+	  retValue.videoTag.buffer = make_shared<Buffer>(buffer->slice(nOneFrameLen));
+	  retValue.timestamp = retValue.videoTag.compositionTime;
+
+	  nStartTimeMs += pHead->gapms;
+	  buffer = retValue.buffer;
+	  retValue.buffer = make_shared<Buffer>();
+	  value->tags->push_back(retValue);
 
   } while (0);
 

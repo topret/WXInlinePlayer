@@ -92,7 +92,7 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
     }
 #else
 	  // nvrÂ¼ÏñÎÄ¼þ½âÎö
-	  if (_buffer->get_length() < 16) {
+	  if (_buffer->get_length() < NVR_FILE_HEADER_MIN_LEN) {
 		  return;
 	  }
 
@@ -108,5 +108,5 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
 #endif
 
 
-  }
+  } // for
 }
