@@ -101,7 +101,7 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
 
 	  shared_ptr<BodyValue> value = _body->decode(_buffer);
 	  if (value->unvalidate) {
-		  printf("decode nvr header failed %d\r\n", value->buffer->get_length());
+		  printf("decode nvr header failed %d  %d\r\n", _buffer->get_length(), value->buffer->get_length());
 		  return;
 	  }
 

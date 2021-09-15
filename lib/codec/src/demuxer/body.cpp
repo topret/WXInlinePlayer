@@ -155,6 +155,7 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   {
 	  int nOneFrameLen = nHeaderSize + pHead->framelen + 4; // tail = 4
 	  if (buffer->get_length() < nOneFrameLen) {
+		  printf("decode nvr header failed bufLen:%d < nOneFrameLen:%d, frameLen:%d\r\n", buffer->get_length(), nOneFrameLen, pHead->framelen);
 		  value->unvalidate = true;
 		  break;
 	  }
