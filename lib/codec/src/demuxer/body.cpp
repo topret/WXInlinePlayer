@@ -120,7 +120,7 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   if (pHead->headSig != 0xFE010000)
   {
 	  printf("read nvr header failed sig:0x%x\r\n", pHead->headSig);
-	  value->buffer = buffer->slice(1);	// ∂¡»°1B
+	  value->buffer = make_shared<Buffer>(buffer->slice(1));	// ∂¡»°1B
 	  return value;
   }
 
@@ -169,7 +169,11 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
 	  retValue.type = VideoTag::TYPE;	// 9
 
 	  static unsigned int nStartTimeMs = 0;
-	  retValue.videoTag.frameType = 1;		// 
+	  retValue.videoTag.frameType = 2;
+	  if (pHead->codect == 26 && pHead->framet == H264E_NALU_ISLICE)
+	  {
+		  retValue.videoTag.frameType = 1;
+	  }
 	  retValue.videoTag.codecId = 7;		// h264
 	  retValue.videoTag.AVCPacketType = 1;	// nalu
 	  retValue.videoTag.compositionTime = nStartTimeMs + pHead->gapms;
