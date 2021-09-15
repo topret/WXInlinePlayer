@@ -177,7 +177,7 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
 	  retValue.videoTag.codecId = 7;		// h264
 	  retValue.videoTag.AVCPacketType = 1;	// nalu
 	  retValue.videoTag.compositionTime = nStartTimeMs + pHead->gapms;
-	  retValue.videoTag.data = make_shared<Buffer>(buffer->slice(nHeaderSize, pHead->framelen));
+	  retValue.videoTag.data = make_shared<Buffer>(buffer->slice(nHeaderSize, nHeaderSize + pHead->framelen));
 	  retValue.videoTag.buffer = make_shared<Buffer>();
 	  retValue.timestamp = retValue.videoTag.compositionTime;
 

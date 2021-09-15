@@ -53,6 +53,7 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 
 void Decoder::decode(shared_ptr<Buffer> &buffer) {
   _buffer = make_shared<Buffer>(*_buffer + *buffer);
+  printf("--->decode nvr start len %d\r\n", _buffer->get_length());
   for (;;) {
 #if FLV_DEFAULT_FILE_STREAM
     switch (_state) {
