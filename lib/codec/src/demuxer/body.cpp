@@ -155,12 +155,14 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   {
 	  int nOneFrameLen = nHeaderSize + pHead->framelen + 4; // tail = 4
 	  if (buffer->get_length() < nOneFrameLen) {
+		  value->unvalidate = true;
 		  break;
 	  }
 
 	  //  read frame
 	  if (!bVideo)
 	  {
+		  buffer = make_shared<Buffer>(buffer->slice(nOneFrameLen));
 		  break; // 暂不处理音频
 	  }
 	 
@@ -177,7 +179,7 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
 	  retValue.videoTag.codecId = 7;		// h264
 	  retValue.videoTag.AVCPacketType = 1;	// nalu
 	  retValue.videoTag.compositionTime = nStartTimeMs + pHead->gapms;
-	  retValue.videoTag.data = make_shared<Buffer>(buffer->slice(nHeaderSize, nHeaderSize + pHead->framelen));
+	  retValue.videoTag.data = make_shared<Buffer>(buffer->slice(nHeaderSize, nHeaderSize + pHead->framelen)); // nalu数据部分
 	  retValue.videoTag.buffer = make_shared<Buffer>();
 	  retValue.timestamp = retValue.videoTag.compositionTime;
 

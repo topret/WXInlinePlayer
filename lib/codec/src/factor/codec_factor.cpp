@@ -51,6 +51,7 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 #include "config.h"
 #include "codec_factor.h"
 #include "codec/codec.h"
+#include "demuxer/body.h"
 
 void CodecFactor::recvHeaderValue(HeaderValue &value) {
 #ifdef __EMSCRIPTEN__
@@ -205,10 +206,12 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 #endif
   } else if (tag.AVCPacketType == 1) {	// nalu
     uint32_t size = tag.data->get_length();
-	printf("_handleVideoTag size:%d,  x:%d\r\n", size, _codec->lengthSizeMinusOne);
+	printf("_handleVideoTag size:%d, data:%0x %0x %0x %0x %0x\r\n", size, tag.data->read_uint8(0), tag.data->read_uint8(1),
+		tag.data->read_uint8(2), tag.data->read_uint8(3), tag.data->read_uint8(4));
 
     shared_ptr<Buffer> unit = tag.data;
     shared_ptr<Buffer> nalus = make_shared<Buffer>();
+#if FLV_DEFAULT_FILE_STREAM
     while (size > 0 && _codec->lengthSizeMinusOne > 0) {
       int naluLen = 0;
       for (uint32_t i = 0; i < _codec->lengthSizeMinusOne; i++) {
@@ -224,11 +227,14 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 	  size -= _codec->lengthSizeMinusOne + naluLen;
 	  printf("_handleVideoTag size:%d, naluLen:%d, x:%d\r\n", size, naluLen, _codec->lengthSizeMinusOne);
     }
+#else
+	nalus = unit;
+#endif
 #ifdef USE_OPEN_H265
     if(true) {
 #elif defined(USE_OPEN_H264)
     uint32_t retCode = _codec->storage->DecodeFrame2(nalus->get_buf_ptr(), nalus->get_length(), &pDst[0], &sDstInfo);
-	printf("_handleVideoTag DecodeFrame2 ret:%d, naluLen:%d\r\n", retCode, nalus->get_length());
+	printf("_handleVideoTag DecodeFrame2 ret:%d, naluLen:%d, status:%d\r\n", retCode, nalus->get_length(), sDstInfo.iBufferStatus);
     if (retCode == 0 && sDstInfo.iBufferStatus == 1) {
       width = (uint32_t) sDstInfo.UsrData.sSystemBuffer.iWidth;
       height = (uint32_t) sDstInfo.UsrData.sSystemBuffer.iHeight;

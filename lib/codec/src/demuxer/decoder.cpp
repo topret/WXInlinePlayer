@@ -105,7 +105,7 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
 		  return;
 	  }
 
-	  if (_factor != nullptr) {
+	  if (_factor != nullptr && value->buffer->get_length() > 0) {
 		  printf("decode nvr start 1 %d\r\n", value->buffer->get_length());
 		  _factor->recvBodyValue(value);
 		  printf("decode nvr end 1 %d\r\n", value->buffer->get_length());
