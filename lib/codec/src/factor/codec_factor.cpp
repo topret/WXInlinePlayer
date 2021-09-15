@@ -249,7 +249,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 #endif
 
       uint32_t totalSize = (width * height) * 3 / 2;
-
+	  printf("%d   decode frame w:%d h:%d, s0:%d, s1:%d, totalSize:%d, p:%p\r\n", timestamp, width, height, stride0, stride1, totalSize, _codec->videoBuffer);
 #ifdef __EMSCRIPTEN__
       EM_ASM({
         var isWorker = typeof importScripts == "function";

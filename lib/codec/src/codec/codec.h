@@ -67,6 +67,7 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 #else
 #include "tinyh264/tinyh264.h"
 #endif
+#include <stdio.h>
 
 using namespace std;
 
@@ -112,6 +113,7 @@ public:
 
   void setVideoBuffer(uint8_t *ptr) {
     videoBuffer = ptr;
+	printf("decode on setVideoBuffer %p\r\n", videoBuffer);
   }
 
   uint32_t try2seek(uint8_t *bytes, uint32_t byteLen);
