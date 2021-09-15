@@ -186,13 +186,12 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
 	  retValue.buffer = make_shared<Buffer>();
 	  value->tags->push_back(retValue);
 
+	  printf("read nvr frame sig:0x%x, codec:%d, frameset:%d,gapms:%d,frameLen:%d, time:%d,headerSize:%d\r\n", pHead->headSig,
+		  pHead->codect, pHead->framet, pHead->gapms, pHead->framelen, retValue.timestamp, nHeaderSize);
   } while (0);
 
 #endif
 
   value->buffer = buffer;
-
-  printf("read nvr frame sig:0x%x, codec:%d, frameset:%d,gapms:%d,frameLen:%d, time:%d,headerSize:%d\r\n", pHead->headSig,
-	  pHead->codect, pHead->framet, pHead->gapms, pHead->framelen, retValue.timestamp, nHeaderSize);
   return value;
 }
