@@ -205,9 +205,11 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 #endif
   } else if (tag.AVCPacketType == 1) {	// nalu
     uint32_t size = tag.data->get_length();
+	printf("_handleVideoTag size:%d,  x:%d\r\n", size, _codec->lengthSizeMinusOne);
+
     shared_ptr<Buffer> unit = tag.data;
     shared_ptr<Buffer> nalus = make_shared<Buffer>();
-    while (size > 0) {
+    while (size > 0 && _codec->lengthSizeMinusOne > 0) {
       int naluLen = 0;
       for (uint32_t i = 0; i < _codec->lengthSizeMinusOne; i++) {
         naluLen |= unit->read_uint8(i) << ((_codec->lengthSizeMinusOne - 1 - i) * 8);
@@ -217,10 +219,10 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
               (uint32_t) _codec->lengthSizeMinusOne + naluLen
       ));
 
-	  printf("_handleVideoTag size:%d, naluLen:%d, x:%d\r\n", size, naluLen, _codec->lengthSizeMinusOne);
       nalus = make_shared<Buffer>(*nalus + *_mask + *nalu);
-      unit = make_shared<Buffer>(unit->slice((uint32_t) _codec->lengthSizeMinusOne + naluLen));
-      size -= _codec->lengthSizeMinusOne + naluLen;
+	  unit = make_shared<Buffer>(unit->slice((uint32_t)_codec->lengthSizeMinusOne + naluLen));
+	  size -= _codec->lengthSizeMinusOne + naluLen;
+	  printf("_handleVideoTag size:%d, naluLen:%d, x:%d\r\n", size, naluLen, _codec->lengthSizeMinusOne);
     }
 #ifdef USE_OPEN_H265
     if(true) {
