@@ -184,7 +184,7 @@
           return WXInlinePlayer.ready().then(()=>{
             player = new WXInlinePlayer(getOptions());
             player.on("loadError", (e) => {
-              console.e("loadError", e);
+                console.log("loadError", e);
             });
             player.on("loadSuccess", () => {
               console.log("loadSuccess");
