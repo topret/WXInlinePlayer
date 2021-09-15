@@ -49,6 +49,7 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 
 #include "decoder.h"
 #include "body.h"
+#include <stdio.h>
 
 void Decoder::decode(shared_ptr<Buffer> &buffer) {
   _buffer = make_shared<Buffer>(*_buffer + *buffer);
@@ -93,18 +94,23 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
 #else
 	  // nvrÂ¼ÏñÎÄ¼þ½âÎö
 	  if (_buffer->get_length() < NVR_FILE_HEADER_MIN_LEN) {
+		  printf("decode nvr header len %d < 16\r\n", _buffer->get_length());
 		  return;
 	  }
 
 	  shared_ptr<BodyValue> value = _body->decode(_buffer);
 	  if (value->unvalidate) {
+		  printf("decode nvr header failed %d\r\n", value->buffer->get_length());
 		  return;
 	  }
 
 	  if (_factor != nullptr) {
+		  printf("decode nvr start 1 %d\r\n", value->buffer->get_length());
 		  _factor->recvBodyValue(value);
+		  printf("decode nvr end 1 %d\r\n", value->buffer->get_length());
 	  }
 	  _buffer = value->buffer;
+	  printf("decode nvr header next len %d\r\n", _buffer->get_length());
 #endif
 
 

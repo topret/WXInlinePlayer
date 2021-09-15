@@ -47,9 +47,10 @@ OTHERWISE, ARISING FROM, OUT OF OR IN ANY WAY CONNECTION WITH THE
 LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 *********************************************************/
 
+#include <iostream>
+#include "config.h"
 #include "codec_factor.h"
 #include "codec/codec.h"
-#include <iostream>
 
 void CodecFactor::recvHeaderValue(HeaderValue &value) {
 #ifdef __EMSCRIPTEN__
@@ -215,6 +216,8 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
               (uint32_t) _codec->lengthSizeMinusOne,
               (uint32_t) _codec->lengthSizeMinusOne + naluLen
       ));
+
+	  printf("_handleVideoTag size:%d, naluLen:%d, x:%d\r\n", size, naluLen, _codec->lengthSizeMinusOne);
       nalus = make_shared<Buffer>(*nalus + *_mask + *nalu);
       unit = make_shared<Buffer>(unit->slice((uint32_t) _codec->lengthSizeMinusOne + naluLen));
       size -= _codec->lengthSizeMinusOne + naluLen;
@@ -223,6 +226,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
     if(true) {
 #elif defined(USE_OPEN_H264)
     uint32_t retCode = _codec->storage->DecodeFrame2(nalus->get_buf_ptr(), nalus->get_length(), &pDst[0], &sDstInfo);
+	printf("_handleVideoTag DecodeFrame2 ret:%d, naluLen:%d\r\n", retCode, nalus->get_length());
     if (retCode == 0 && sDstInfo.iBufferStatus == 1) {
       width = (uint32_t) sDstInfo.UsrData.sSystemBuffer.iWidth;
       height = (uint32_t) sDstInfo.UsrData.sSystemBuffer.iHeight;
@@ -230,6 +234,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
       stride1 = (uint32_t) sDstInfo.UsrData.sSystemBuffer.iStride[1];
 #else
       uint32_t retCode = h264bsdDecode(_codec->storage, nalus->get_buf_ptr(), nalus->get_length(), &picPtr, &width, &height);
+	  printf("_handleVideoTag h264bsdDecode ret:%d, naluLen:%d\r\n", retCode, nalus->get_length());
       if (retCode == H264BSD_PIC_RDY) {
         stride0 = width;
         stride1 = height;
