@@ -300,6 +300,7 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 #else
       memcpy(_codec->videoBuffer, picPtr, totalSize);
 #endif
+		// call processor.js _onCodecMsgHandler: video
         EM_ASM({
           var isWorker = typeof importScripts == "function";
           var bridge = (isWorker ? self : window)[UTF8ToString($0)];
