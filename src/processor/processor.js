@@ -54,12 +54,12 @@ import Sound from '../sound/sound';
 import Util from '../util/util';
 
 
-function Sleep (time) {
-    var start = new Date().getTime();
-    do{
-        var end = new Date().getTime();
-    }while(end-start<=time);
-}
+//function Sleep (time) {
+//    var start = new Date().getTime();
+//    do{
+//        var end = new Date().getTime();
+//    }while(end-start<=time);
+//}
 
 class Processor extends EventEmitter {
   constructor({
@@ -110,6 +110,13 @@ class Processor extends EventEmitter {
     }
 
     return 0;
+  }
+
+  Sleep (time) {
+      var start = new Date().getTime();
+      do{
+          var end = new Date().getTime();
+      }while(end-start<=time);
   }
 
   getCurrentTime() {
@@ -414,7 +421,7 @@ class Processor extends EventEmitter {
         });
         console.log(Date.now().toString() +"processor.js: onvideo, len:" + String(this.frames.length));
         console.log(msg.data);
-        Sleep(40)
+        this.Sleep(40)
         break;
       }
       case 'audio': {
