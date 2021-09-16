@@ -389,8 +389,9 @@ class Processor extends EventEmitter {
         if (!this.baseTime) {
           this.baseTime = timestamp;
         }
+        this.hasVideo = true;
         console.log("processor.js: onvideo:");
-        console.log(msg.data);
+        console.log(msg.data.toString());
         this.frames.push({
           data: Buffer.from(new Uint8Array(buffer)),
           timestamp: timestamp - this.baseTime,
@@ -406,6 +407,8 @@ class Processor extends EventEmitter {
         if (!this.baseTime) {
           this.baseTime = timestamp;
         }
+          
+        this.hasAudio = true;
         this.audios.push(Buffer.from(new Uint8Array(buffer)));
         break;
       }
