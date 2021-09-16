@@ -285,6 +285,7 @@ class Processor extends EventEmitter {
     } 
     ////////////////// case 3
     else if (this.hasVideo) {
+        console.log("processor.js: checkVideo, state:" + this.state);
       if (!this.isEnded && this.state == 'buffering') {
         return;
       }
@@ -294,7 +295,8 @@ class Processor extends EventEmitter {
       }
       const frame = this.frames.shift();
       if (frame) {
-        this.currentTime = frame.timestamp;
+          this.currentTime = frame.timestamp;
+          console.log("processor.js: checkVideo, emit frame:" + this.state);
         this.emit('frame', frame);
         if (this.sound) {
           this.sound.setBlockedCurrTime(this.currentTime);
@@ -390,8 +392,6 @@ class Processor extends EventEmitter {
           this.baseTime = timestamp;
         }
         this.hasVideo = true;
-        console.log("processor.js: onvideo:");
-        console.log(msg.data.toString());
         this.frames.push({
           data: Buffer.from(new Uint8Array(buffer)),
           timestamp: timestamp - this.baseTime,
@@ -400,6 +400,8 @@ class Processor extends EventEmitter {
           stride0,
           stride1
         });
+        console.log("processor.js: onvideo, len:" + String(this.frames.length));
+        console.log(msg.data);
         break;
       }
       case 'audio': {
