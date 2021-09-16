@@ -206,6 +206,7 @@ class Processor extends EventEmitter {
    * a big function  with a lot logic
    */
   _onTickHandler() {
+      console.log("state:" + this.state + ", audio:" + String(this.hasAudio) + ", video:" + String(this.hasVideo))
     if (this.state == 'created') {
       return;
     }
