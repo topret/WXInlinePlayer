@@ -54,10 +54,11 @@ import Sound from '../sound/sound';
 import Util from '../util/util';
 
 
-function sleep(ms) {
-    return new Promise(function(resolve, reject) {
-        setTimeout(resolve, ms);
-    })
+function Sleep (time) {
+    var start = new Date().getTime();
+    do{
+        var end = new Date().getTime();
+    }while(end-start<=time);
 }
 
 class Processor extends EventEmitter {
@@ -413,7 +414,7 @@ class Processor extends EventEmitter {
         });
         console.log("processor.js: onvideo, len:" + String(this.frames.length));
         console.log(msg.data);
-        await sleep(40)
+        Sleep(40)
         break;
       }
       case 'audio': {
