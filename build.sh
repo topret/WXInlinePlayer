@@ -3,6 +3,8 @@
 set -x
 
 parcel build src/index.js --no-source-maps --target browser
+#parcel serve src/index.js --no-source-maps --target browser
+
 mv dist/* ./example
 
 cd lib/codec

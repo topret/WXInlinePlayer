@@ -218,10 +218,10 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
       for (uint32_t i = 0; i < _codec->lengthSizeMinusOne; i++) {
         naluLen |= unit->read_uint8(i) << ((_codec->lengthSizeMinusOne - 1 - i) * 8);
       }
+
       shared_ptr<Buffer> nalu = make_shared<Buffer>(unit->slice(
               (uint32_t) _codec->lengthSizeMinusOne,
-              (uint32_t) _codec->lengthSizeMinusOne + naluLen
-      ));
+              (uint32_t) _codec->lengthSizeMinusOne + naluLen ));
 
       nalus = make_shared<Buffer>(*nalus + *_mask + *nalu);
 	  unit = make_shared<Buffer>(unit->slice((uint32_t)_codec->lengthSizeMinusOne + naluLen));
