@@ -53,6 +53,13 @@ import Ticker from '../util/ticker';
 import Sound from '../sound/sound';
 import Util from '../util/util';
 
+
+function sleep(ms) {
+    return new Promise(function(resolve, reject) {
+        setTimeout(resolve, ms);
+    })
+}
+
 class Processor extends EventEmitter {
   constructor({
     volume = 1.0,
@@ -338,11 +345,6 @@ class Processor extends EventEmitter {
     }
   }
 
-  function sleep(ms) {
-      return new Promise(function(resolve, reject) {
-          setTimeout(resolve, ms);
-      })
-  }
   /**
    * another big function with a lot logic
    * @param {*} msg 
