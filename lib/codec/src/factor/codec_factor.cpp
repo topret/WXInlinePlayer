@@ -52,6 +52,7 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 #include "codec_factor.h"
 #include "codec/codec.h"
 #include "demuxer/body.h"
+#include "stream/buffer.h"
 
 void CodecFactor::recvHeaderValue(HeaderValue &value) {
 #ifdef __EMSCRIPTEN__
@@ -249,7 +250,6 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
 #endif
 
       uint32_t totalSize = (width * height) * 3 / 2;
-	  printf("%d   decode frame w:%d h:%d, s0:%d, s1:%d, totalSize:%d, p:%p\r\n", timestamp, width, height, stride0, stride1, totalSize, _codec->videoBuffer);
 #ifdef __EMSCRIPTEN__
       EM_ASM({
         var isWorker = typeof importScripts == "function";
@@ -261,6 +261,8 @@ void CodecFactor::_handleVideoTag(VideoTagValue &tag, uint32_t timestamp) {
         }
       }, _codec->bridgeName.c_str(), totalSize);
 
+	  printf("%d   decode frame w:%d h:%d, s0:%d, s1:%d, totalSize:%d, p:%p, %p, %p, %p\r\n", timestamp, width, height, stride0, stride1, totalSize,
+		  _codec->videoBuffer, pDst[0], pDst[1], pDst[2]);
       if(_codec->videoBuffer != nullptr){
 #ifdef USE_OPEN_H265
   // nothing to do

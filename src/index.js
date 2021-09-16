@@ -347,9 +347,10 @@ class WXInlinePlayer extends EventEmitter {
   }
 
   _onFrameHandler({ width, height, data }) {
-    if (this.drawer) {
-      this.drawer.drawNextOutputPicture(width, height, data);
-    }
+        if (this.drawer) {
+            console.log("drawer.drawNextOutputPicture w:" + String() + ", h:" + String());
+            this.drawer.drawNextOutputPicture(width, height, data);
+        }
   }
 
   _onBufferingHandler() {

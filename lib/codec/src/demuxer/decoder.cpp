@@ -49,11 +49,12 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 
 #include "decoder.h"
 #include "body.h"
-#include <stdio.h>
+
+#include "stream/buffer.h"
 
 void Decoder::decode(shared_ptr<Buffer> &buffer) {
   _buffer = make_shared<Buffer>(*_buffer + *buffer);
-  printf("--->decode nvr start len %d\r\n", _buffer->get_length());
+  PrintFrameParse("--->decode nvr start len %d\r\n", _buffer->get_length());
   for (;;) {
 #if FLV_DEFAULT_FILE_STREAM
     switch (_state) {
@@ -95,23 +96,23 @@ void Decoder::decode(shared_ptr<Buffer> &buffer) {
 #else
 	  // nvr录像文件解析
 	  if (_buffer->get_length() < NVR_FILE_HEADER_MIN_LEN) {
-		  printf("decode nvr header len %d < 16\r\n", _buffer->get_length());
+		  PrintFrameParse("decode nvr header len %d < 16\r\n", _buffer->get_length());
 		  return;
 	  }
 
 	  shared_ptr<BodyValue> value = _body->decode(_buffer);
 	  if (value->unvalidate) {
-		  printf("decode nvr header failed %d  %d\r\n", _buffer->get_length(), value->buffer->get_length());
-		  return;
+		  //PrintFrameParse("decode nvr header failed %d  %d\r\n", _buffer->get_length(), value->buffer->get_length());
+		  return;	// 继续接收数据!
 	  }
 
 	  if (_factor != nullptr && value->buffer->get_length() > 0) {
-		  printf("decode nvr start 1 %d\r\n", value->buffer->get_length());
+		  PrintFrameParse("decode nvr start 1 %d\r\n", value->buffer->get_length());
 		  _factor->recvBodyValue(value);
-		  printf("decode nvr end 1 %d\r\n", value->buffer->get_length());
+		  PrintFrameParse("decode nvr end 1 %d\r\n", value->buffer->get_length());
 	  }
 	  _buffer = value->buffer;
-	  printf("decode nvr header next len %d\r\n", _buffer->get_length());
+	  PrintFrameParse("decode nvr header next len %d\r\n", _buffer->get_length());
 #endif
 
 

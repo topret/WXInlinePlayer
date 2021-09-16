@@ -48,7 +48,7 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 *********************************************************/
 
 #include "body.h"
-#include <stdio.h>
+#include "stream/buffer.h"
 
 //  x86 nvr 帧头格式
 typedef struct _DataHeard
@@ -155,8 +155,8 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
   {
 	  int nOneFrameLen = nHeaderSize + pHead->framelen + 4; // tail = 4
 	  if (buffer->get_length() < nOneFrameLen) {
-		  printf("decode nvr header failed bufLen:%d < nOneFrameLen:%d, frameLen:%d\r\n", buffer->get_length(), nOneFrameLen, pHead->framelen);
-		  value->unvalidate = true;
+		  //printf("decode nvr header failed bufLen:%d < nOneFrameLen:%d, frameLen:%d\r\n", buffer->get_length(), nOneFrameLen, pHead->framelen);
+		  value->unvalidate = true;	// 缓存不足
 		  break;
 	  }
 
@@ -190,7 +190,7 @@ shared_ptr<BodyValue> Body::decode(shared_ptr<Buffer> &buffer) {
 	  value->tags->push_back(retValue);
 
 	  // read nvr frame sig:0xfe010000, codec:26, frameset:7,gapms:1,frameLen:30, time:1,headerSize:32
-	  printf("read nvr frame sig:0x%x, codec:%d, frameset:%d,gapms:%d,frameLen:%d, time:%d,headerSize:%d, NaluSize:%d\r\n", pHead->headSig,
+	  PrintFrameParse("read nvr frame sig:0x%x, codec:%d, frameset:%d,gapms:%d,frameLen:%d, time:%d,headerSize:%d, NaluSize:%d\r\n", pHead->headSig,
 		  pHead->codect, pHead->framet, pHead->gapms, pHead->framelen, retValue.timestamp, nHeaderSize, retValue.videoTag.data->get_length());
   } while (0);
 

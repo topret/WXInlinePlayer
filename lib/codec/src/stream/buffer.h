@@ -53,6 +53,12 @@ LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 #include <memory>
 #include <vector>
 
+#include <stdio.h>
+// 是否打印从stream获取frame过程
+const static int gnLogParseFrameFromePacket = 0;
+#define PrintFrameParse( format, ...)	if(gnLogParseFrameFromePacket)  { printf("<%s(%d)>:" format, __FUNCTION__,__LINE__, ##__VA_ARGS__); }
+
+
 namespace stream {
     enum Endianness {
         kLittleEndian,
