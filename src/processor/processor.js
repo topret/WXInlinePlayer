@@ -247,6 +247,7 @@ class Processor extends EventEmitter {
           this.sound.resume();
         }
         if (this.blocked || !this.currentTime) {
+            console.log("state:" + this.state + ", blocked:" + String(this.blocked) + ", currentTime:" + String(this.currentTime))
           return;
         }
       }
@@ -262,7 +263,8 @@ class Processor extends EventEmitter {
 
       for (let i = 0; i < this.frames.length; i++) {
         const { timestamp } = this.frames[i];
-        const diff = this.currentTime - timestamp;
+        const diff = this.currentTime - timestamp;        
+        console.log("processor.js: checkVideo, emit frame: diff:" + String(this.diff));
         if (Math.abs(diff) <= 25) {
           this.emit('frame', this.frames[i]);
           this.frames.splice(0, i + 1);
@@ -412,6 +414,7 @@ class Processor extends EventEmitter {
         }
           
         this.hasAudio = true;
+        console.log("processor.js: onAudio, len:" + String(this.audios.length));
         this.audios.push(Buffer.from(new Uint8Array(buffer)));
         break;
       }
