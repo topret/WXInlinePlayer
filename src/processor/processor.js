@@ -412,7 +412,7 @@ class Processor extends EventEmitter {
           stride0,
           stride1
         });
-        console.log("processor.js: onvideo, len:" + String(this.frames.length));
+        console.log(Date.now().toString() +"processor.js: onvideo, len:" + String(this.frames.length));
         console.log(msg.data);
         Sleep(40)
         break;

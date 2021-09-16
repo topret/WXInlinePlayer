@@ -132,6 +132,7 @@ export default function() {
         }
       });
     } else {
+        console.log("get url " + this.url)
       return fetch(this.url, {
         method: 'GET'
       })
