@@ -360,7 +360,7 @@ class WXInlinePlayer extends EventEmitter {
       this.loader.read().then(data => {
         if (data.length) {
             this.processor.process(data);
-            this.Sleep(20);
+            this.processor.Sleep(20);
         }
       });
     }
