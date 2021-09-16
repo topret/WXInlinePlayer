@@ -338,6 +338,11 @@ class Processor extends EventEmitter {
     }
   }
 
+  function sleep(ms) {
+      return new Promise(function(resolve, reject) {
+          setTimeout(resolve, ms);
+      })
+  }
   /**
    * another big function with a lot logic
    * @param {*} msg 
@@ -406,6 +411,7 @@ class Processor extends EventEmitter {
         });
         console.log("processor.js: onvideo, len:" + String(this.frames.length));
         console.log(msg.data);
+        await sleep(40)
         break;
       }
       case 'audio': {
