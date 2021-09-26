@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxplayer_view", "wxplayer_view.vcxproj", "{955F3A0C-5196-4C49-9A82-493D3F5B2592}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "radar_View", "H:\sdk\激光雷达20210922\ros_rslidar\radar_View.vcxproj", "{50606640-79FD-4A65-A0BF-70E25D415CF0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testYuvToBmp", "..\testYuvToBmp\testYuvToBmp.vcxproj", "{5D814960-9BB5-461A-AB7F-D57438377FC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +25,22 @@ Global
 		{955F3A0C-5196-4C49-9A82-493D3F5B2592}.Release|x64.Build.0 = Release|x64
 		{955F3A0C-5196-4C49-9A82-493D3F5B2592}.Release|x86.ActiveCfg = Release|Win32
 		{955F3A0C-5196-4C49-9A82-493D3F5B2592}.Release|x86.Build.0 = Release|Win32
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Debug|x64.ActiveCfg = Debug|x64
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Debug|x64.Build.0 = Debug|x64
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Debug|x86.ActiveCfg = Debug|Win32
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Debug|x86.Build.0 = Debug|Win32
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Release|x64.ActiveCfg = Release|x64
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Release|x64.Build.0 = Release|x64
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Release|x86.ActiveCfg = Release|Win32
+		{50606640-79FD-4A65-A0BF-70E25D415CF0}.Release|x86.Build.0 = Release|Win32
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Debug|x64.ActiveCfg = Debug|x64
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Debug|x64.Build.0 = Debug|x64
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Debug|x86.ActiveCfg = Debug|Win32
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Debug|x86.Build.0 = Debug|Win32
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Release|x64.ActiveCfg = Release|x64
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Release|x64.Build.0 = Release|x64
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Release|x86.ActiveCfg = Release|Win32
+		{5D814960-9BB5-461A-AB7F-D57438377FC8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
