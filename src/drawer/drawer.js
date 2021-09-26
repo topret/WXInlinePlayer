@@ -56,7 +56,9 @@ class Drawer {
     this.yTextureRef = null;
     this.uTextureRef = null;
     this.vTextureRef = null;
+    this.isInit = false;
     this._initContextGL();
+
 
     if (this.contextGL) {
       this._initProgram();
@@ -92,11 +94,17 @@ class Drawer {
     return !!gl;
   }
 
-  drawNextOutputPicture(width, height, data) {
+    drawNextOutputPicture(width, height, data) {
     const { yTextureRef, uTextureRef, vTextureRef } = this;
     const gl = this.contextGL;
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     gl.viewport(0, 0, width, height);
+
+    if(!this.isInit) {
+        this.isInit = true;
+        canvas.width = width;
+        canvas.height = height;
+    }
 
     const i420Data = data;
     const yDataLength = width * height;
@@ -191,8 +199,23 @@ class Drawer {
       }
       ++nameIndex;
     }
-
     this.contextGL = gl;
+      // https://www.cnblogs.com/yiyuzi/p/15015702.html
+    //let w = canvas.clientWidth;
+    //let h = canvas.clientHeight;
+    //let DPR = window.devicePixelRatio;// Éè±¸ÏñËØ±È
+    //console.log("_initContextGL context name:" + contextName + ", client W:" + String(w) + ", H:" + String(h) + ", DPR:" + String(DPR) + ",canvas W:" + String(canvas.width) + ",canvas H:" + String(canvas.height) );
+    //if (DPR) {
+    //    canvas.width = w; //w * DPR;
+    //    canvas.height = h;// h * DPR;
+    //    let ctx = canvas.getContext("2d");
+    //    if (ctx) {
+    //        ctx.scale(DPR, DPR);
+    //        console.log("ctx.scale DPR:" + String(DPR));
+    //    }
+           
+    //}
+
   }
 
   _initProgram() {
